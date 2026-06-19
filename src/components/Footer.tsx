@@ -141,8 +141,33 @@ export function Footer() {
 
           {/* Bottom bar */}
           <div className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 md:items-center gap-3">
-            {/* Left: Doha time + date — populated via refs in useEffect */}
+            {/* Left: Instagram + Doha time + date — time/date populated via refs in useEffect */}
             <div className="text-[#888880] text-[11px]" style={{ fontFamily: '"Suisse Mono", "Courier New", monospace' }}>
+              <a
+                href="https://www.instagram.com/studionuqtaa/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram — @studionuqtaa"
+                className="flex w-fit items-center gap-2 text-[#888880] hover:text-[#f5f0eb] transition-colors duration-200"
+                style={{ marginBottom: "10px" }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="url(#ig-gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <defs>
+                    {/* Official Instagram brand gradient (warm bottom-left → pink → purple top-right) */}
+                    <linearGradient id="ig-gradient" x1="0" y1="1" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#feda75" />
+                      <stop offset="25%" stopColor="#fa7e1e" />
+                      <stop offset="50%" stopColor="#d62976" />
+                      <stop offset="75%" stopColor="#962fbf" />
+                      <stop offset="100%" stopColor="#4f5bd5" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+                <span>Instagram</span>
+              </a>
               <p ref={timeRef}>Doha, Qatar</p>
               <p ref={dateRef}>(GMT +03)</p>
             </div>
