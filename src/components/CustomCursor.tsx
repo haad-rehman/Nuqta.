@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -9,23 +10,42 @@ export function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const pos = useRef({ x: 0, y: 0 });
   const ring = useRef({ x: 0, y: 0 });
-  const rafRef = useRef<number>(0);
+  // Last committed state — guards so we only setState on an actual change.
+  const lastText = useRef("");
+  const lastVisible = useRef(false);
 
   useEffect(() => {
     // Only on desktop
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
+    let lastHitTest = 0;
+
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
-      setIsVisible(true);
+      if (!lastVisible.current) {
+        lastVisible.current = true;
+        setIsVisible(true);
+      }
 
-      // Read cursor-text from hovered element
+      // Throttle the expensive elementFromPoint hit-test to ~60ms; only
+      // re-render when the resolved cursor label actually changes.
+      const now = e.timeStamp;
+      if (now - lastHitTest < 60) return;
+      lastHitTest = now;
       const el = document.elementFromPoint(e.clientX, e.clientY);
       const textEl = el?.closest("[data-cursor-text]");
       const text = textEl?.getAttribute("data-cursor-text") ?? "";
-      setCursorText(text);
+      if (text !== lastText.current) {
+        lastText.current = text;
+        setCursorText(text);
+      }
     };
-    const onLeave = () => setIsVisible(false);
+    const onLeave = () => {
+      if (lastVisible.current) {
+        lastVisible.current = false;
+        setIsVisible(false);
+      }
+    };
 
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseleave", onLeave);
@@ -41,14 +61,15 @@ export function CustomCursor() {
       if (ringRef.current) {
         ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px)`;
       }
-      rafRef.current = requestAnimationFrame(animate);
     };
-    rafRef.current = requestAnimationFrame(animate);
+    // Route the ring follower through GSAP's shared ticker (single page rAF)
+    // instead of an independent requestAnimationFrame loop.
+    gsap.ticker.add(animate);
 
     return () => {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(rafRef.current);
+      gsap.ticker.remove(animate);
     };
   }, []);
 
