@@ -1,17 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CustomCursor } from "@/components/CustomCursor";
 import { AppShell } from "@/components/AppShell";
-
-// Inter weight 300 — used only in the loading screen
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["300"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "nuqta. | Brand and Web Design Studio",
@@ -48,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <body>
         <div className="grain-overlay" aria-hidden="true" />
         <CustomCursor />
