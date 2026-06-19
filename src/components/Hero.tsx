@@ -1,10 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
-import { HeroBackground } from "@/components/HeroBackground";
+
+// Absolute-positioned decorative canvas (inset-0, zIndex 0). It already
+// self-defers init via requestIdleCallback and is not the LCP element, so
+// loading it client-only keeps its code out of the critical bundle without
+// any layout shift (its box is fixed by the hero section, not by this node).
+const HeroBackground = dynamic(
+  () => import("@/components/HeroBackground").then((m) => m.HeroBackground),
+  { ssr: false }
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
