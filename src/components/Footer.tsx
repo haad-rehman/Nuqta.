@@ -132,24 +132,16 @@ export function Footer() {
               </nav>
             </div>
 
-            {/* Studio details — Based in only */}
+            {/* Studio details — Instagram + based in */}
             <div className="md:pt-14 min-w-[220px]">
               <p className="text-[#888880] text-[10px] tracking-[0.22em] uppercase mb-4">(Studio Details)</p>
-              <p className="text-[#f5f0eb] text-[13px]">Based in Doha, Qatar</p>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 md:items-center gap-3">
-            {/* Left: Instagram + Doha time + date — time/date populated via refs in useEffect */}
-            <div className="text-[#888880] text-[11px]" style={{ fontFamily: '"Suisse Mono", "Courier New", monospace' }}>
               <a
                 href="https://www.instagram.com/studionuqtaa/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram — @studionuqtaa"
-                className="flex w-fit items-center gap-2 text-[#888880] hover:text-[#f5f0eb] transition-colors duration-200"
-                style={{ marginBottom: "10px" }}
+                className="flex w-fit items-center gap-2 text-[#f5f0eb] hover:text-[#c8b89a] transition-colors duration-200 text-[13px]"
+                style={{ marginBottom: "12px" }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="url(#ig-gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <defs>
@@ -168,6 +160,14 @@ export function Footer() {
                 </svg>
                 <span>Instagram</span>
               </a>
+              <p className="text-[#f5f0eb] text-[13px]">Based in Doha, Qatar</p>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 md:items-center gap-3">
+            {/* Left: Doha time + date — populated via refs in useEffect */}
+            <div className="text-[#888880] text-[11px]" style={{ fontFamily: '"Suisse Mono", "Courier New", monospace' }}>
               <p ref={timeRef}>Doha, Qatar</p>
               <p ref={dateRef}>(GMT +03)</p>
             </div>
