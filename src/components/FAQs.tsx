@@ -69,7 +69,7 @@ function AccordionItem({ q, a, open, onToggle }: {
         className="w-full flex items-center justify-between text-left group"
         style={{ paddingTop: "15.75px", paddingBottom: "15.75px" }}
       >
-        <span className="text-[#e8e8e3] text-[17.75px] font-normal leading-snug group-hover:opacity-70 transition-opacity duration-200 pr-6">
+        <span className="text-[#e8e8e3] text-[17.75px] font-normal leading-snug group-hover:opacity-70 transition-opacity duration-200" style={{ paddingRight: "24px" }}>
           {q}
         </span>
         <span
@@ -80,7 +80,7 @@ function AccordionItem({ q, a, open, onToggle }: {
         </span>
       </button>
       <div ref={bodyRef} style={{ height: 0, overflow: "hidden", opacity: 0 }}>
-        <div className="pb-5 space-y-3">
+        <div style={{ paddingBottom: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
           {a.split("\n\n").map((para, i) => (
             <p key={i} className="text-[#938f8a] text-[15px] leading-[1.7]">{para}</p>
           ))}
@@ -99,7 +99,16 @@ function FounderCTA() {
         width={276}
         height={276}
         className="object-cover shrink-0"
-        style={{ width: "138px", height: "138px" }}
+        style={{
+          width: "138px",
+          height: "138px",
+          // Feather the hard rectangular edges so the photo melts into the dark
+          // section background instead of sitting in a sharp box.
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 64% at 50% 43%, #000 42%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "radial-gradient(ellipse 60% 64% at 50% 43%, #000 42%, rgba(0,0,0,0) 100%)",
+        }}
       />
       <p className="text-[#e8e8e3] text-[clamp(1.1rem,1.5vw,1.35rem)] font-normal leading-snug">
         Got more questions? Chat with Haad.
@@ -108,7 +117,8 @@ function FounderCTA() {
         href={CAL_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 border border-[#e8e8e3]/30 text-[#e8e8e3] text-[13px] tracking-[0.06em] px-4 py-2 hover:bg-[#e8e8e3] hover:text-[#0a0a0a] hover:border-[#e8e8e3] transition-all duration-200 w-fit"
+        className="inline-flex items-center gap-2 border border-[#e8e8e3]/30 text-[#e8e8e3] text-[13px] tracking-[0.06em] hover:bg-[#e8e8e3] hover:text-[#0a0a0a] hover:border-[#e8e8e3] transition-all duration-200 w-fit"
+        style={{ padding: "8px 16px" }}
       >
         Book a call with Haad&nbsp;↗
       </a>
@@ -154,10 +164,16 @@ export function FAQs() {
   return (
     <section
       ref={sectionRef}
-      className="border-t border-[#393632] py-16 md:py-24 px-6 md:px-10 bg-[#181715]"
-      style={{ borderTopWidth: "0.8px" }}
+      className="border-t border-[#393632] bg-[#181715]"
+      style={{
+        borderTopWidth: "0.8px",
+        // Padding set inline because the global `* { padding:0 }` reset (unlayered)
+        // beats Tailwind's layered px-*/py-* utilities. clamp() reproduces the
+        // intended px-6→px-10 / py-16→py-24 responsive ramp.
+        padding: "clamp(64px, 8vw, 96px) clamp(24px, 5vw, 40px)",
+      }}
     >
-      <div className="max-w-[1440px] mx-auto">
+      <div className="max-w-[1440px]" style={{ margin: "0 auto" }}>
 
         {/* ── Desktop: 2-col [left: eyebrow+CTA] [right: heading+accordion] ── */}
         <div className="hidden lg:grid lg:grid-cols-[4fr_8fr] gap-12 lg:gap-16 min-h-[500px]">
@@ -220,7 +236,7 @@ export function FAQs() {
           </div>
 
           {/* CTA at the bottom on mobile */}
-          <div className="pt-4 border-t border-[#393632]" style={{ borderTopWidth: "0.8px" }}>
+          <div className="border-t border-[#393632]" style={{ borderTopWidth: "0.8px", paddingTop: "16px" }}>
             <FounderCTA />
           </div>
         </div>

@@ -20,7 +20,7 @@ const CUBES = [
     title: "Web Design",
     tagline: "Your ideas brought to life",
     position: "left" as const,
-    href: "https://alayoon4x4.netlify.app/",
+    href: "https://alayoon.netlify.app/",
   },
   {
     images: [
@@ -57,6 +57,11 @@ function getImageForFace(images: string[], faceIndex: number) {
 
 function snapToNearest90(deg: number) {
   return Math.round(deg / 90) * 90;
+}
+
+// Nearest full turn — lands the cube on its front face (the main image).
+function snapToFront(deg: number) {
+  return Math.round(deg / 360) * 360;
 }
 
 // ── Particle ──────────────────────────────────────────────────────────────────
@@ -96,12 +101,21 @@ function ImageCube({
   const cubeRef    = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const fanRefs    = useRef<(HTMLDivElement | null)[]>([null, null, null]);
-  const rxRef      = useRef(0);
-  const ryRef      = useRef(0);
+  // Single source of truth for the cube's orientation. Both the auto-spin loop
+  // and every gsap tween read/write this object directly, then paint it to the
+  // DOM via applyRot() — no transform-string round-trip, so the spin→settle
+  // handoff stays perfectly smooth.
+  const rot        = useRef({ x: 0, y: 0 });
   const spinTickRef = useRef<(() => void) | null>(null);
   const isHoveredRef = useRef(false);
   const isOpenRef    = useRef(false);
   const spinVelocity = useRef({ rx: 0, ry: 0 });
+
+  const applyRot = useCallback(() => {
+    if (cubeRef.current) {
+      cubeRef.current.style.transform = `rotateX(${rot.current.x}deg) rotateY(${rot.current.y}deg)`;
+    }
+  }, []);
 
   const startSpin = useCallback(() => {
     if (spinTickRef.current) return; // already spinning on the shared ticker
@@ -109,10 +123,10 @@ function ImageCube({
       // Gently ramp velocity toward target — cube eases in from stationary instead of snapping to full speed
       spinVelocity.current.rx += (0.12 - spinVelocity.current.rx) * 0.05;
       spinVelocity.current.ry += (0.18 - spinVelocity.current.ry) * 0.05;
-      rxRef.current += spinVelocity.current.rx;
-      ryRef.current += spinVelocity.current.ry;
+      rot.current.x += spinVelocity.current.rx;
+      rot.current.y += spinVelocity.current.ry;
       if (cubeRef.current && !isHoveredRef.current && !isOpenRef.current && sectionVisibleRef.current) {
-        cubeRef.current.style.transform = `rotateX(${rxRef.current}deg) rotateY(${ryRef.current}deg)`;
+        applyRot();
       }
     };
     spinTickRef.current = step;
@@ -165,11 +179,13 @@ function ImageCube({
 
     if (isOpen && !isHoveredRef.current) {
       stopSpin();
-      gsap.to(cubeRef.current, {
-        rotateX: snapToNearest90(rxRef.current),
-        rotateY: snapToNearest90(ryRef.current),
+      gsap.killTweensOf(rot.current);
+      gsap.to(rot.current, {
+        x: snapToNearest90(rot.current.x),
+        y: snapToNearest90(rot.current.y),
         duration: 0.45,
         ease: "power3.out",
+        onUpdate: applyRot,
       });
       // On mobile: cube fades away completely so fan cards take full stage
       gsap.to(wrapperRef.current, {
@@ -218,26 +234,21 @@ function ImageCube({
   // ── Hover ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     isHoveredRef.current = isHovered;
+    // Cancel any in-flight orientation tween so spin/settle never fight.
+    gsap.killTweensOf(rot.current);
 
     if (isHovered) {
       stopSpin();
-      const snapX = snapToNearest90(rxRef.current);
-      const snapY = snapToNearest90(ryRef.current);
-
-      gsap.to(cubeRef.current, {
-        rotateX: snapX,
-        rotateY: snapY,
-        duration: 0.55,
+      // Settle slowly and smoothly onto the front face (the main image),
+      // tweening the shared rot object so the paint is monotonic — no jitter.
+      gsap.to(rot.current, {
+        x: snapToFront(rot.current.x),
+        y: snapToFront(rot.current.y),
+        duration: 1.1,
         ease: "power3.out",
-        onUpdate() {
-          const tr = cubeRef.current?.style.transform ?? "";
-          const mX = tr.match(/rotateX\(([-\d.]+)deg\)/);
-          const mY = tr.match(/rotateY\(([-\d.]+)deg\)/);
-          if (mX) rxRef.current = parseFloat(mX[1]);
-          if (mY) ryRef.current = parseFloat(mY[1]);
-        },
+        onUpdate: applyRot,
       });
-      gsap.to(wrapperRef.current, { scale: 1.22, opacity: 1, duration: 0.55, ease: "power3.out" });
+      gsap.to(wrapperRef.current, { scale: 1.22, opacity: 1, duration: 0.6, ease: "power3.out" });
     } else {
       if (isOpenRef.current) {
         gsap.to(wrapperRef.current, {
@@ -312,7 +323,7 @@ function ImageCube({
 
       {/* Cube wrapper */}
       <div ref={wrapperRef} style={{ width: size, height: size, position: "relative", transformStyle: "preserve-3d", zIndex: 2 }}>
-        <div ref={cubeRef} style={{ width: size, height: size, transformStyle: "preserve-3d", position: "relative" }}>
+        <div ref={cubeRef} style={{ width: size, height: size, transformStyle: "preserve-3d", position: "relative", willChange: "transform" }}>
           {faces.map((face, i) => {
             const img = getImageForFace(images, i);
             return (

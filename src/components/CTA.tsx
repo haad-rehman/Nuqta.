@@ -78,7 +78,7 @@ export function CTA() {
 
   const lineStyle: React.CSSProperties = {
     fontFamily: "Animo, Arial, sans-serif",
-    color: "#e8e8e3",
+    color: "#f3f1ec",
     fontWeight: 500,
     textTransform: "uppercase",
     lineHeight: 0.9,
@@ -86,6 +86,11 @@ export function CTA() {
     fontSize: "clamp(2.5rem, 9.4vw, 9.1rem)",
     display: "block",
     whiteSpace: "nowrap",
+    // The background photo is bright (sheer curtain) on one side and dark on the
+    // other, so a flat colour can't read everywhere. A soft dark halo keeps the
+    // near-white headline legible over the bright areas and stays invisible over
+    // the dark ones.
+    textShadow: "0 2px 30px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.55)",
   };
 
   return (
