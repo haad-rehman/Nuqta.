@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
-import { useAutoplayVideos } from "@/hooks/useAutoplayVideos";
+import { HeroBackground } from "@/components/HeroBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,8 +40,6 @@ export function Hero() {
   const contentRef = useRef<HTMLDivElement>(null);
   const wordmarkRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<HTMLDivElement>(null);
-
-  useAutoplayVideos(sectionRef);
 
   useEffect(() => {
     // On reduced motion: reveal everything instantly, skip parallax
@@ -106,20 +104,8 @@ export function Hero() {
       ref={sectionRef}
       style={{ position: "relative", height: "100vh", overflow: "hidden" }}
     >
-      {/* Background canvas animation */}
-      <iframe
-        src="/hero-bg.html"
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          border: "none",
-          zIndex: 0,
-          pointerEvents: "none",
-        }}
-      />
+      {/* Background canvas animation (ported from the old hero-bg.html iframe) */}
+      <HeroBackground />
 
       {/* Top vignette — keeps nav area very dark */}
       <div
