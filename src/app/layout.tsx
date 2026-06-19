@@ -5,6 +5,7 @@ import { CustomCursor } from "@/components/CustomCursor";
 import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nuqtaa.studio"),
   title: "nuqta. | Brand and Web Design Studio",
   description:
     "We design change-making website and brand experiences that finally match the business behind them.",
