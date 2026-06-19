@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -9,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function CTA() {
   const sectionRef    = useRef<HTMLElement>(null);
-  const imgRef        = useRef<HTMLImageElement>(null);  // desktop parallax only
+  const imgRef        = useRef<HTMLDivElement>(null);  // parallax wrapper around the fill image
   const peopleRowRef  = useRef<HTMLSpanElement>(null);
   const linesRef      = useRef<HTMLDivElement>(null);
   const btnRef        = useRef<HTMLAnchorElement>(null);
@@ -92,22 +93,26 @@ export function CTA() {
       ref={sectionRef}
       style={{ position: "relative", background: "#080807" }}
     >
-      {/* Background image */}
+      {/* Background image — parallax applied to the wrapper so the fill <Image>
+          keeps its own positioning. */}
       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <div
           ref={imgRef}
-          src="/assets/New-people-bg.webp"
-          alt=""
-          loading="lazy"
-          className="object-cover object-[28%_center] md:object-center"
           style={{
             position: "absolute",
             inset: 0,
-            width: "100%",
             height: "118%",
+            willChange: "transform",
           }}
-        />
+        >
+          <Image
+            src="/assets/New-people-bg.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-[28%_center] md:object-center"
+          />
+        </div>
       </div>
 
       {/* Content */}

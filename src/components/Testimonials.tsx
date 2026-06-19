@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 const TESTIMONIALS = [
   {
@@ -146,8 +147,7 @@ export function Testimonials() {
       {/* Attribution */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "24px" }}>
         <div style={{ width: "36px", height: "36px", borderRadius: "9999px", overflow: "hidden", flexShrink: 0, background: "rgb(26, 26, 26)" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={t.avatar} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          <Image src={t.avatar} alt={t.name} width={72} height={72} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         </div>
         <div>
           <p style={{ margin: 0, fontFamily: "Khteka, Arial, sans-serif", fontSize: "17.9px", fontWeight: 400, color: "rgb(232, 232, 227)", lineHeight: "1.3" }}>{t.name}</p>

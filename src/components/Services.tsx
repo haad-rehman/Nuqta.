@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 
 const SERVICES = [
   { name: "Brand Strategy",      thumb: "/assets/697ef10d5fcc93485bf8dfb4_Brand_Strategy.avif" },
@@ -83,12 +84,13 @@ export function Services() {
                   marginBottom: active === i ? "8px" : "0",
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={s.thumb}
                   alt={s.name}
+                  width={IMG_W * 2}
+                  height={360}
+                  sizes="(max-width: 768px) 100vw, 231px"
                   style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", borderRadius: "2px" }}
-                  loading="lazy"
                 />
               </div>
             </div>
@@ -111,19 +113,17 @@ export function Services() {
           }}
         >
           {SERVICES.map((s, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               key={s.name}
               src={s.thumb}
               alt=""
+              fill
+              sizes="231px"
               style={{
-                position: "absolute", inset: 0,
-                width: "100%", height: "100%",
                 objectFit: "cover",
                 opacity: active === i ? 1 : 0,
                 transition: "opacity 0.4s ease",
               }}
-              loading="lazy"
             />
           ))}
         </div>

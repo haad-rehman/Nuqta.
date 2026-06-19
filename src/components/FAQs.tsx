@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -92,13 +93,13 @@ function AccordionItem({ q, a, open, onToggle }: {
 function FounderCTA() {
   return (
     <div className="flex flex-col gap-5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/assets/founder-haad.jpeg"
         alt="A headshot of Haad"
+        width={276}
+        height={276}
         className="object-cover shrink-0"
         style={{ width: "138px", height: "138px" }}
-        loading="lazy"
       />
       <p className="text-[#e8e8e3] text-[clamp(1.1rem,1.5vw,1.35rem)] font-normal leading-snug">
         Got more questions? Chat with Haad.

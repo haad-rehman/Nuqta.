@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 const CLIENTS = [
   { name: "Al Ayoon",          svg: "/assets/clients/al-ayoon.svg" },
   { name: "Al Sharqi",         svg: "/assets/clients/al-sharqi.svg" },
@@ -50,10 +52,12 @@ export function ClientsMarquee() {
                   height: "215px",
                   borderBottom: i < 4 ? "0.8px dotted rgb(57, 54, 50)" : "none",
                 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={client.svg}
                     alt={client.name}
+                    width={199}
+                    height={199}
+                    unoptimized
                     style={{
                       display: "block",
                       width: "199px",
@@ -62,7 +66,6 @@ export function ClientsMarquee() {
                       objectPosition: "center",
                       opacity: 0.88,
                     }}
-                    loading="lazy"
                   />
                   <span style={{
                     position: "absolute",
@@ -114,10 +117,12 @@ export function ClientsMarquee() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={client.svg}
                     alt={client.name}
+                    width={199}
+                    height={199}
+                    unoptimized
                     style={{
                       display: "block",
                       width: "80%",
@@ -126,7 +131,6 @@ export function ClientsMarquee() {
                       objectPosition: "center",
                       opacity: 0.88,
                     }}
-                    loading="lazy"
                   />
                 </div>
               ))}

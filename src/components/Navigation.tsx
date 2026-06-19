@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 
 const CAL_LINK = "https://cal.com/hadu-wfspde/intro-call-with-haad";
 
@@ -251,9 +252,9 @@ export function Navigation() {
           }}
         >
           {/* Logo */}
-          <a href="/" style={{ justifySelf: "start", textDecoration: "none" }}>
+          <Link href="/" style={{ justifySelf: "start", textDecoration: "none" }}>
             <NavLogo />
-          </a>
+          </Link>
 
           {/* Center links — desktop only */}
           <div className="hidden md:flex" style={{ alignItems: "center", gap: "0" }}>
@@ -356,13 +357,13 @@ export function Navigation() {
               marginBottom: "48px",
             }}
           >
-            <a
+            <Link
               href="/"
               style={{ textDecoration: "none" }}
               onClick={() => setMobileOpen(false)}
             >
               <NavLogo />
-            </a>
+            </Link>
             <button
               ref={closeMobileRef}
               onClick={() => setMobileOpen(false)}

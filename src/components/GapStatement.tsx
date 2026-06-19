@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -17,6 +18,31 @@ const IMAGES = [
     alt: "OH Architecture",
   },
 ];
+
+// Module-level so it isn't recreated on every GapStatement render (and React
+// doesn't reset its subtree). Shared by the desktop and mobile layouts.
+function Testimonial() {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <blockquote
+        className="text-[#f5f0eb] font-light leading-[1.9] max-w-md mb-10"
+        style={{ fontSize: "clamp(0.85rem, 3.5vw, 1rem)", fontFamily: "Georgia, 'Times New Roman', serif" }}
+      >
+        &ldquo;Since the new site went live, we get more calls than before. Most people who book in say they found us through it.&rdquo;
+      </blockquote>
+      <div className="flex items-center gap-4">
+        <div className="w-9 h-9 rounded-full overflow-hidden bg-[#1a1a1a] border border-[#2a2a2a] shrink-0">
+          <Image src="/assets/liwa-review.jpg" alt="Muhammad Fazal" width={72} height={72}
+            className="w-full h-full object-cover" />
+        </div>
+        <div className="text-left">
+          <p className="text-[#f5f0eb] text-[13px] font-medium">Muhammad Fazal</p>
+          <p className="text-[#888880] text-[11px] mt-0.5">Liwa car and tyre service</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function GapStatement() {
   // ── Desktop refs ──────────────────────────────────────────────────────────
@@ -121,28 +147,6 @@ export function GapStatement() {
     return () => ctx.revert();
   }, []);
 
-  const Testimonial = () => (
-    <div className="flex flex-col items-center text-center">
-      <blockquote
-        className="text-[#f5f0eb] font-light leading-[1.9] max-w-md mb-10"
-        style={{ fontSize: "clamp(0.85rem, 3.5vw, 1rem)", fontFamily: "Georgia, 'Times New Roman', serif" }}
-      >
-        &ldquo;Since the new site went live, we get more calls than before. Most people who book in say they found us through it.&rdquo;
-      </blockquote>
-      <div className="flex items-center gap-4">
-        <div className="w-9 h-9 rounded-full overflow-hidden bg-[#1a1a1a] border border-[#2a2a2a] shrink-0">
-          <img src="/assets/liwa-review.jpg" alt="Muhammad Fazal"
-            className="w-full h-full object-cover" loading="lazy"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-        </div>
-        <div className="text-left">
-          <p className="text-[#f5f0eb] text-[13px] font-medium">Muhammad Fazal</p>
-          <p className="text-[#888880] text-[11px] mt-0.5">Liwa car and tyre service</p>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {/* ── Desktop: scroll-driven sticky layout ── */}
@@ -167,8 +171,7 @@ export function GapStatement() {
 
             <div ref={imageRef} className="relative z-10 shrink-0 overflow-hidden" style={{ width: "80px", aspectRatio: "3/4" }}>
               {IMAGES.map((img, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={i} src={img.src} alt={img.alt} className="absolute inset-0 w-full h-full object-cover" style={{ opacity: i === 0 ? 1 : 0 }} loading="lazy" />
+                <Image key={i} src={img.src} alt={img.alt} fill sizes="244px" className="object-cover" style={{ opacity: i === 0 ? 1 : 0 }} />
               ))}
             </div>
 
@@ -220,11 +223,10 @@ export function GapStatement() {
             {/* Center image — expands */}
             <div
               ref={mImageRef}
-              className="shrink-0 overflow-hidden"
+              className="relative shrink-0 overflow-hidden"
               style={{ width: "48px", aspectRatio: "3/4" }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={IMAGES[0].src} alt={IMAGES[0].alt} className="w-full h-full object-cover" loading="lazy" />
+              <Image src={IMAGES[0].src} alt={IMAGES[0].alt} fill sizes="200px" className="object-cover" />
             </div>
 
             {/* "That Gap" — slides in from the LEFT */}

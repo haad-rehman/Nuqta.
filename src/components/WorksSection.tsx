@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -324,8 +325,7 @@ function ImageCube({
                 }}
               >
                 {img && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
+                  <Image src={img} alt="" fill sizes="208px" unoptimized style={{ objectFit: "cover" }} />
                 )}
               </div>
             );
@@ -357,8 +357,7 @@ function ImageCube({
             }}
           >
             {img ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <Image src={img} alt="" fill sizes="160px" unoptimized style={{ objectFit: "cover" }} />
             ) : (
               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(234,234,234,0.8)" }}>
                 <span style={{ fontSize: 9, color: "rgba(26,26,26,0.3)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Soon</span>

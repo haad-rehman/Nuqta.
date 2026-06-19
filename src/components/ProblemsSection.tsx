@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -196,8 +197,7 @@ export function ProblemsSection() {
             {/* Founder attribution */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
               <div style={{ width: "40px", height: "40px", borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/founder-haad.jpeg" alt="Haad Rehman"
+                <Image src="/assets/founder-haad.jpeg" alt="Haad Rehman" width={80} height={80}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               <div>
@@ -265,8 +265,7 @@ export function ProblemsSection() {
         {/* Founder attribution */}
         <div style={{ display: "flex", alignItems: "center", gap: "14px", borderTop: "1px solid #1a1a1a", paddingTop: "28px" }}>
           <div style={{ width: "40px", height: "40px", borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/founder-haad.jpeg" alt="Haad Rehman"
+            <Image src="/assets/founder-haad.jpeg" alt="Haad Rehman" width={80} height={80}
               style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
           <div>
