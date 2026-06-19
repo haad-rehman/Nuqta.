@@ -693,8 +693,19 @@ export function WorksSection() {
       id="work"
       ref={sectionRef}
       onMouseMove={handleSectionMouseMove}
-      style={{ backgroundColor: "#eaeaea", color: "#1a1a1a", position: "relative", cursor: hoveredCube !== null ? "none" : "default" }}
-      className="overflow-hidden py-[clamp(120px,12vw,140px)]"
+      style={{
+        backgroundColor: "#eaeaea",
+        color: "#1a1a1a",
+        position: "relative",
+        cursor: hoveredCube !== null ? "none" : "default",
+        // Vertical padding set inline because the global `* { padding:0 }` reset
+        // (unlayered) beats Tailwind v4's layered py-* utility. Mobile gets extra
+        // bottom room so the last cube ("3D Development") and its fanned cards
+        // clear the next section instead of being cut by overflow-hidden.
+        paddingTop: "clamp(120px, 12vw, 140px)",
+        paddingBottom: isMobile ? "clamp(200px, 56vw, 300px)" : "clamp(120px, 12vw, 140px)",
+      }}
+      className="overflow-hidden"
     >
       {/* SVG connector line */}
       {pathD && (
