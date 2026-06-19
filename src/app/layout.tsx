@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { CustomCursor } from "@/components/CustomCursor";
 import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {
@@ -43,7 +42,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className="grain-overlay" aria-hidden="true" />
-        <CustomCursor />
         <AppShell>
           <SmoothScroll>{children}</SmoothScroll>
         </AppShell>
