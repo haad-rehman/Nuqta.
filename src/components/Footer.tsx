@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -21,23 +21,9 @@ const NAV_LINKS = [
 function NuqtaCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef    = useRef<HTMLCanvasElement>(null);
-  const rafRef       = useRef<number>(0);
-  const visibleRef   = useRef(false);
   const mouseRef     = useRef({ x: -9999, y: -9999, pressing: false });
   const particlesRef = useRef<{ ox: number; oy: number; x: number; y: number; vx: number; vy: number }[]>([]);
   const readyRef     = useRef(false);
-
-  // IntersectionObserver — pause rendering when off-screen
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => { visibleRef.current = entry.isIntersecting; },
-      { threshold: 0 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   useEffect(() => {
     // Skip particle canvas entirely on reduced motion
@@ -90,11 +76,7 @@ function NuqtaCanvas() {
     buildParticles();
 
     const tick = () => {
-      // Skip rendering when canvas is off-screen
-      if (!readyRef.current || !visibleRef.current) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
+      if (!readyRef.current) return;
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       ctx.clearRect(0, 0, w, h);
@@ -125,10 +107,18 @@ function NuqtaCanvas() {
         ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
+
+    // Run on the shared gsap.ticker (one page rAF); fully add/remove on
+    // visibility so nothing ticks while the footer is off-screen.
+    let running = false;
+    const startTicker = () => { if (!running) { gsap.ticker.add(tick); running = true; } };
+    const stopTicker = () => { if (running) { gsap.ticker.remove(tick); running = false; } };
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) startTicker(); else stopTicker(); },
+      { threshold: 0 }
+    );
+    io.observe(containerRef.current ?? canvas);
 
     const onMove = (e: MouseEvent | TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -140,7 +130,13 @@ function NuqtaCanvas() {
     const onDown  = () => { mouseRef.current.pressing = true; };
     const onUp    = () => { mouseRef.current.pressing = false; };
     const onLeave = () => { mouseRef.current.x = -9999; mouseRef.current.y = -9999; mouseRef.current.pressing = false; };
-    const onResize = () => { readyRef.current = false; buildParticles(); };
+    // Debounced — mobile URL-bar show/hide fires resize continuously, and
+    // rebuilding the particle field is expensive (getImageData over the text).
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { readyRef.current = false; buildParticles(); }, 200);
+    };
 
     canvas.addEventListener("mousemove", onMove);
     canvas.addEventListener("touchmove", onMove as EventListener, { passive: true });
@@ -152,7 +148,9 @@ function NuqtaCanvas() {
     window.addEventListener("resize", onResize);
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
+      stopTicker();
+      io.disconnect();
+      clearTimeout(resizeTimer);
       canvas.removeEventListener("mousemove", onMove);
       canvas.removeEventListener("touchmove", onMove as EventListener);
       canvas.removeEventListener("mousedown", onDown);
@@ -191,35 +189,34 @@ function NuqtaCanvas() {
 }
 
 export function Footer() {
-  const [time, setTime] = useState("");
-  const [date, setDate] = useState("");
-  const [year, setYear] = useState("");
   const footerRef = useRef<HTMLElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  // Clock written straight to the DOM via refs — no per-second re-render.
+  const timeRef = useRef<HTMLParagraphElement>(null);
+  const dateRef = useRef<HTMLParagraphElement>(null);
+  const yearRef = useRef<HTMLSpanElement>(null);
 
   // Live Doha time (UTC+3, no DST)
   useEffect(() => {
+    const timeFmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Qatar",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const dateFmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Qatar",
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
     const update = () => {
       const now = new Date();
-      setTime(
-        new Intl.DateTimeFormat("en-US", {
-          timeZone: "Asia/Qatar",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        }).format(now)
-      );
-      setDate(
-        new Intl.DateTimeFormat("en-US", {
-          timeZone: "Asia/Qatar",
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }).format(now)
-      );
-      setYear(now.getFullYear().toString());
+      if (timeRef.current) timeRef.current.textContent = `Doha, Qatar ${timeFmt.format(now)}`;
+      if (dateRef.current) dateRef.current.textContent = `${dateFmt.format(now)} (GMT +03)`;
+      if (yearRef.current) yearRef.current.textContent = `©${now.getFullYear()} Nuqta Studio`;
     };
     update();
     const id = setInterval(update, 1000);
@@ -297,10 +294,10 @@ export function Footer() {
 
           {/* Bottom bar */}
           <div className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 md:items-center gap-3">
-            {/* Left: Doha time + date */}
+            {/* Left: Doha time + date — populated via refs in useEffect */}
             <div className="text-[#888880] text-[11px]" style={{ fontFamily: '"Suisse Mono", "Courier New", monospace' }}>
-              <p>Doha, Qatar {time}</p>
-              <p>{date} (GMT +03)</p>
+              <p ref={timeRef}>Doha, Qatar</p>
+              <p ref={dateRef}>(GMT +03)</p>
             </div>
             {/* Center: back to top */}
             <div className="flex flex-col items-start md:items-center gap-1">
@@ -313,7 +310,7 @@ export function Footer() {
             </div>
             {/* Right: copyright */}
             <div className="flex flex-col items-start md:items-end gap-1">
-              <p className="text-[#888880] text-[11px]">©{year} Nuqta Studio</p>
+              <p className="text-[#888880] text-[11px]"><span ref={yearRef}>Nuqta Studio</span></p>
             </div>
           </div>
         </div>
