@@ -97,7 +97,7 @@ export function CTA() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={imgRef}
-          src="/assets/New-people-bg.png"
+          src="/assets/New-people-bg.webp"
           alt=""
           loading="lazy"
           className="object-cover object-[28%_center] md:object-center"
