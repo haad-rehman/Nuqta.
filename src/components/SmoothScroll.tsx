@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "@studio-freight/lenis";
+import { gsap } from "gsap";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -16,13 +17,16 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
     });
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+    // Drive Lenis from GSAP's shared ticker so the whole page runs on a single
+    // rAF loop instead of Lenis maintaining its own parallel one. gsap.ticker
+    // time is in seconds; Lenis.raf expects milliseconds.
+    const update = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(update);
 
-    return () => lenis.destroy();
+    return () => {
+      gsap.ticker.remove(update);
+      lenis.destroy();
+    };
   }, []);
 
   return <>{children}</>;
