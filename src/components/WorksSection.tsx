@@ -98,12 +98,13 @@ function ImageCube({
   const fanRefs    = useRef<(HTMLDivElement | null)[]>([null, null, null]);
   const rxRef      = useRef(0);
   const ryRef      = useRef(0);
-  const frameRef   = useRef<number>(0);
+  const spinTickRef = useRef<(() => void) | null>(null);
   const isHoveredRef = useRef(false);
   const isOpenRef    = useRef(false);
   const spinVelocity = useRef({ rx: 0, ry: 0 });
 
   const startSpin = useCallback(() => {
+    if (spinTickRef.current) return; // already spinning on the shared ticker
     const step = () => {
       // Gently ramp velocity toward target — cube eases in from stationary instead of snapping to full speed
       spinVelocity.current.rx += (0.12 - spinVelocity.current.rx) * 0.05;
@@ -113,14 +114,17 @@ function ImageCube({
       if (cubeRef.current && !isHoveredRef.current && !isOpenRef.current && sectionVisibleRef.current) {
         cubeRef.current.style.transform = `rotateX(${rxRef.current}deg) rotateY(${ryRef.current}deg)`;
       }
-      frameRef.current = requestAnimationFrame(step);
     };
-    frameRef.current = requestAnimationFrame(step);
+    spinTickRef.current = step;
+    gsap.ticker.add(step);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const stopSpin = useCallback(() => {
-    cancelAnimationFrame(frameRef.current);
+    if (spinTickRef.current) {
+      gsap.ticker.remove(spinTickRef.current);
+      spinTickRef.current = null;
+    }
     spinVelocity.current = { rx: 0, ry: 0 };
   }, []);
 
@@ -384,7 +388,6 @@ export function WorksSection() {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const lineProgressRef = useRef(0);
-  const rafRef       = useRef<number>(0);
   const sectionVisibleRef = useRef<boolean>(true);
 
   const [hoveredCube, setHoveredCube] = useState<number | null>(null);
@@ -423,23 +426,26 @@ export function WorksSection() {
   // Cursor follower
   const rawMouseRef    = useRef({ x: 0, y: 0 });
   const smoothMouseRef = useRef({ x: 0, y: 0 });
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const cursorRafRef = useRef<number>(0);
+  const cursorLabelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let alive = true;
+    // The label follows a fine pointer only; skip the per-frame loop on
+    // touch / coarse pointers where there is no cursor to track.
+    if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) {
+      return;
+    }
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const tick = () => {
       smoothMouseRef.current.x = lerp(smoothMouseRef.current.x, rawMouseRef.current.x, 0.13);
       smoothMouseRef.current.y = lerp(smoothMouseRef.current.y, rawMouseRef.current.y, 0.13);
-      if (sectionVisibleRef.current) {
-        setCursorPos({ x: smoothMouseRef.current.x, y: smoothMouseRef.current.y });
+      // Write the transform straight to the DOM — no per-frame React re-render.
+      if (sectionVisibleRef.current && cursorLabelRef.current) {
+        cursorLabelRef.current.style.transform =
+          `translate(${smoothMouseRef.current.x}px, ${smoothMouseRef.current.y}px) translate(-50%, -50%)`;
       }
-      if (alive) cursorRafRef.current = requestAnimationFrame(tick);
     };
-    cursorRafRef.current = requestAnimationFrame(tick);
-    return () => { alive = false; cancelAnimationFrame(cursorRafRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
   }, []);
 
   const handleSectionMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -492,15 +498,42 @@ export function WorksSection() {
     setTimeout(computePath, 100);
   }, [cubeSize, computePath]);
 
-  // ── Particle RAF loop ─────────────────────────────────────────────────────
+  // ── Particle loop (shared ticker) ──────────────────────────────────────────
   useEffect(() => {
     if (!pathLen) return;
 
-    const tick = () => {
-      if (!sectionVisibleRef.current) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
+    // Pre-render the moving tip glow (halo + core) once into an offscreen
+    // canvas, then blit it each frame instead of rebuilding two radial
+    // gradients per frame. Pixel-identical (source-over is associative).
+    const GC = 20; // center of the 40×40 glow sprite
+    let glowSprite: HTMLCanvasElement | null = null;
+    if (typeof document !== "undefined") {
+      const g = document.createElement("canvas");
+      g.width = 40;
+      g.height = 40;
+      const gctx = g.getContext("2d");
+      if (gctx) {
+        const halo = gctx.createRadialGradient(GC, GC, 0, GC, GC, 18);
+        halo.addColorStop(0, "rgba(255,255,255,0.55)");
+        halo.addColorStop(1, "rgba(255,255,255,0)");
+        gctx.fillStyle = halo;
+        gctx.beginPath();
+        gctx.arc(GC, GC, 18, 0, Math.PI * 2);
+        gctx.fill();
+        const core = gctx.createRadialGradient(GC, GC, 0, GC, GC, 5);
+        core.addColorStop(0, "rgba(255,255,255,1)");
+        core.addColorStop(0.5, "rgba(200,200,200,0.8)");
+        core.addColorStop(1, "rgba(150,150,150,0)");
+        gctx.fillStyle = core;
+        gctx.beginPath();
+        gctx.arc(GC, GC, 5, 0, Math.PI * 2);
+        gctx.fill();
+        glowSprite = g;
       }
+    }
+
+    const tick = () => {
+      if (!sectionVisibleRef.current) return;
 
       const canvas = canvasRef.current;
       const path   = pathRef.current;
@@ -547,32 +580,16 @@ export function WorksSection() {
           particlesRef.current = alive;
           ctx.globalAlpha = 1;
 
-          if (drawn > 4 && lineProgressRef.current < 0.99) {
+          if (drawn > 4 && lineProgressRef.current < 0.99 && glowSprite) {
             const tip = path.getPointAtLength(drawn);
-            const halo = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, 18);
-            halo.addColorStop(0, "rgba(255,255,255,0.55)");
-            halo.addColorStop(1, "rgba(255,255,255,0)");
-            ctx.fillStyle = halo;
-            ctx.beginPath();
-            ctx.arc(tip.x, tip.y, 18, 0, Math.PI * 2);
-            ctx.fill();
-            const core = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, 5);
-            core.addColorStop(0, "rgba(255,255,255,1)");
-            core.addColorStop(0.5, "rgba(200,200,200,0.8)");
-            core.addColorStop(1, "rgba(150,150,150,0)");
-            ctx.fillStyle = core;
-            ctx.beginPath();
-            ctx.arc(tip.x, tip.y, 5, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.drawImage(glowSprite, tip.x - GC, tip.y - GC);
           }
         }
       }
-
-      rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
   }, [pathLen]);
 
   // ── GSAP scroll animations ────────────────────────────────────────────────
@@ -586,6 +603,9 @@ export function WorksSection() {
       });
       lineProgressRef.current = 1;
       openedRef.current = [true, true, true];
+      // One-time mount sync: render the cubes in their open (fanned) end state
+      // for the reduced-motion fallback, matching the imperative DOM writes above.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpenedCubes([true, true, true]);
       textRefs.current.forEach((el) => { if (el) el.style.color = "#000000"; });
       return;
@@ -702,6 +722,7 @@ export function WorksSection() {
 
       {/* Cursor label — desktop only */}
       <div
+        ref={cursorLabelRef}
         aria-hidden="true"
         style={{
           position: "absolute",
@@ -709,7 +730,7 @@ export function WorksSection() {
           left: 0,
           pointerEvents: "none",
           zIndex: 100,
-          transform: `translate(${cursorPos.x}px, ${cursorPos.y}px) translate(-50%, -50%)`,
+          transform: "translate(0px, 0px) translate(-50%, -50%)",
           opacity: hoveredCube !== null ? 1 : 0,
           transition: "opacity 0.22s ease",
           willChange: "transform",
