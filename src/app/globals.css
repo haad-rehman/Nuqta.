@@ -1,0 +1,255 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: "Animo";
+  src: url("/fonts/Animo-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Khteka";
+  src: url("/fonts/KHTeka-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Suisse Mono";
+  src: url("/fonts/SuisseIntlMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Khteka", Arial, sans-serif;
+  --font-heading: "Animo", Arial, sans-serif;
+  --font-mono: "Suisse Mono", "Courier New", monospace;
+  --animate-ticker: ticker 30s linear infinite;
+  --animate-marquee: marquee-left 35s linear infinite;
+  --animate-marquee-slow: marquee-left 50s linear infinite;
+  --animate-slide-flash: slide-flash 5s linear infinite;
+}
+
+:root {
+  /* ── Core palette ── */
+  --background: #0a0a0a;
+  --foreground: #f5f0eb;
+  --muted: #1a1a1a;
+  --muted-foreground: #888880;
+  --accent: #c8b89a;
+  --accent-foreground: #0a0a0a;
+  --border: #2a2a2a;
+  --card: #111111;
+  --card-foreground: #f5f0eb;
+  --primary: #f5f0eb;
+  --primary-foreground: #0a0a0a;
+  --ring: #c8b89a;
+
+  /* ── Extended palette (missing from original extraction) ── */
+  --background-deep: #080807;       /* CTA section, hero overlay */
+  --background-deeper: #060606;     /* Footer canvas bg */
+  --surface-warm: #181715;          /* FAQs section bg */
+  --surface-light: #eaeaea;         /* WorksSection light bg */
+  --foreground-secondary: #e8e8e3;  /* bymonolog cooler foreground */
+  --muted-medium: #938f8a;          /* warm mid-gray labels */
+  --border-warm: #393632;           /* warm dark border (FAQs) */
+  --text-dim: #a09c96;              /* dimmed body text */
+}
+
+/* ── Reset ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #0a0a0a;
+  color: #f5f0eb;
+  font-family: "Khteka", Arial, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Animated grain overlay — exact match to bymonolog.com g_grain_overlay ── */
+@keyframes grain-animation {
+  0%, 100% { transform: translate(0, 0); }
+  17%       { transform: translate(-5%, -10%); }
+  33%       { transform: translate(3%, -15%); }
+  50%       { transform: translate(12%, 9%); }
+  67%       { transform: translate(9%, 4%); }
+  83%       { transform: translate(-1%, 7%); }
+}
+.grain-overlay {
+  position: fixed;
+  inset: -50% 0 0 -50%;
+  width: 200%;
+  height: 200vh;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image: url("https://cdn.prod.website-files.com/68b652bbd6c64a44c8fe3e5e/692114faea9b602a766335ec_download.png");
+  background-size: auto;
+  background-attachment: fixed;
+  animation: grain-animation 0.5s steps(6) infinite;
+  will-change: transform;
+}
+
+/* ── News ticker ── */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* ── Horizontal marquees ── */
+@keyframes marquee-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee-left 35s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.animate-marquee-slow {
+  animation: marquee-left 50s linear infinite;
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* ── Hero background breathing ── */
+@keyframes hero-bg-breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+.hero-bg-breathe {
+  animation: hero-bg-breathe 10s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+/* ── Scroll-triggered fade-in ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  opacity: 0;
+}
+.fade-up.visible {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Stagger children ── */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 80ms; }
+.stagger > *:nth-child(3) { animation-delay: 160ms; }
+.stagger > *:nth-child(4) { animation-delay: 240ms; }
+.stagger > *:nth-child(5) { animation-delay: 320ms; }
+.stagger > *:nth-child(6) { animation-delay: 400ms; }
+
+/* ── nirnor slide-flash (scroll arrow) ── */
+@keyframes slide-flash {
+  0%   { opacity: 0; transform: translateY(-150%); }
+  20%  { opacity: 1; transform: translateY(0); }
+  30%  { opacity: 1; transform: translateY(0); }
+  40%  { opacity: 0.2; }
+  50%  { opacity: 1; }
+  60%  { opacity: 0.2; }
+  70%  { opacity: 1; transform: translateY(0); }
+  80%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(150%); }
+}
+
+/* ── Underline slide hover (nirnor nav) ── */
+.underline-slide {
+  position: relative;
+  overflow: hidden;
+}
+.underline-slide::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #1a1a1a;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+.underline-slide:hover::after {
+  transform: translateX(0);
+}
+
+/* ── Line clamp ── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+/* ── Testimonial progress bar ── */
+@keyframes fill-bar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ── Reduced motion — pause all CSS animations for vestibular users ── */
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay { animation-play-state: paused !important; }
+  .animate-ticker { animation-play-state: paused !important; }
+  .animate-marquee { animation-play-state: paused !important; }
+  .animate-marquee-slow { animation-play-state: paused !important; }
+  .hero-bg-breathe { animation-play-state: paused !important; }
+  .animate-slide-flash { animation-play-state: paused !important; }
+  .fade-up { opacity: 1 !important; }
+  .fade-up.visible { animation: none !important; opacity: 1 !important; }
+}
+
+/* ── ProblemsSection mobile ── */
+@media (max-width: 767px) {
+  .problems-mobile-left {
+    position: static !important;
+    width: 100% !important;
+    padding-top: 24px !important;
+  }
+  .problems-mobile-right {
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+    right: auto !important;
+    margin-top: 32px !important;
+  }
+}

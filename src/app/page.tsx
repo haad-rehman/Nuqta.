@@ -1,0 +1,52 @@
+import { Navigation } from "@/components/Navigation";
+import { Hero } from "@/components/Hero";
+import { ProblemsSection } from "@/components/ProblemsSection";
+import { ClientsMarquee } from "@/components/ClientsMarquee";
+import { GapStatement } from "@/components/GapStatement";
+import { WorksSection } from "@/components/WorksSection";
+import { Testimonials } from "@/components/Testimonials";
+import { Services } from "@/components/Services";
+import { Process } from "@/components/Process";
+import { FAQs } from "@/components/FAQs";
+import { CTA } from "@/components/CTA";
+import { Footer } from "@/components/Footer";
+
+export default function Home() {
+  return (
+    <>
+      <Navigation />
+      <main>
+        <Hero />
+        <ProblemsSection />
+        {/* Clients + Gap stack: Gap slides up over Clients as you scroll */}
+        <div style={{ position: "relative" }}>
+          <ClientsMarquee />
+          <GapStatement />
+        </div>
+        {/* Breathing room between gap statement and works */}
+        <div style={{ height: "clamp(80px, 10vw, 120px)", background: "#0a0a0a" }} />
+        {/* Works section from nirnor.jp replaces Success Stories */}
+        <WorksSection />
+        {/* Services section: dark two-column layout */}
+        <section id="services" style={{ background: "rgb(8, 8, 7)" }}>
+          <div style={{ padding: "clamp(80px, 15.2vw, 218.4px) 27.2px 78.4px" }}>
+            <div className="flex flex-col md:flex-row" style={{ gap: "16px", alignItems: "flex-start" }}>
+              {/* Left column — testimonials */}
+              <div className="w-full md:w-[354.6px] md:shrink-0">
+                <Testimonials />
+              </div>
+              {/* Right column — "What we can help with" */}
+              <div className="flex-1 min-w-0">
+                <Services />
+              </div>
+            </div>
+          </div>
+        </section>
+        <Process />
+        <FAQs />
+        <CTA />
+      </main>
+      <Footer />
+    </>
+  );
+}
