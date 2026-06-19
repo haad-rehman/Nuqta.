@@ -3,10 +3,20 @@
 import { useEffect, type RefObject } from "react";
 
 /**
+ * Lazy, viewport-driven autoplay for muted background <video> loops.
+ *
+ * Markup contract (see Process.tsx): each <video> has preload="none", a poster,
+ * and its <source> children carry the URL in `data-src` (NOT `src`) so the
+ * browser fetches nothing until we opt in. This hook:
+ *   - attaches the real sources (data-src -> src) + .load() + .play() only when
+ *     the element nears the viewport (IntersectionObserver),
+ *   - pauses and releases the buffer (detaches src) when it scrolls away,
+ *   - shows the poster and never loads a byte under prefers-reduced-motion,
+ *     coarse pointer (touch/mobile), or Save-Data.
+ *
  * iOS/Safari refuse muted-autoplay unless the element is genuinely muted at
- * play() time — and React does not reliably mirror the `muted` prop to the DOM.
- * This forces muted imperatively, then plays each video once it has data,
- * retrying when it scrolls into view and on the first user gesture.
+ * play() time and React does not reliably mirror the `muted` prop to the DOM —
+ * so we force it imperatively and retry on the first user gesture.
  */
 export function useAutoplayVideos(ref: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -16,7 +26,35 @@ export function useAutoplayVideos(ref: RefObject<HTMLElement | null>) {
     const videos = Array.from(root.querySelectorAll("video"));
     if (!videos.length) return;
 
+    // Poster-only modes: never fetch video bytes.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    const saveData = conn?.saveData === true;
+    if (reduced || coarse || saveData) return; // poster stays, sources never attach
+
     const cleanups: (() => void)[] = [];
+
+    const attach = (v: HTMLVideoElement) => {
+      const sources = Array.from(v.querySelectorAll("source"));
+      let changed = false;
+      sources.forEach((s) => {
+        const lazy = s.getAttribute("data-src");
+        if (lazy && s.getAttribute("src") !== lazy) {
+          s.setAttribute("src", lazy);
+          changed = true;
+        }
+      });
+      if (changed) v.load();
+    };
+
+    const release = (v: HTMLVideoElement) => {
+      v.pause();
+      const sources = Array.from(v.querySelectorAll("source"));
+      const had = sources.some((s) => s.hasAttribute("src"));
+      sources.forEach((s) => s.removeAttribute("src"));
+      if (had) v.load(); // drop the decoded buffer to free memory
+    };
 
     const play = (v: HTMLVideoElement) => {
       v.muted = true;
@@ -37,16 +75,27 @@ export function useAutoplayVideos(ref: RefObject<HTMLElement | null>) {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) play(entry.target as HTMLVideoElement);
+          const v = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            attach(v);
+            play(v);
+          } else {
+            release(v);
+          }
         });
       },
-      { threshold: 0.1 }
+      // Start loading just before the section is fully on screen.
+      { threshold: 0.1, rootMargin: "200px 0px" }
     );
     videos.forEach((v) => io.observe(v));
     cleanups.push(() => io.disconnect());
 
-    // Last-resort fallback (e.g. iOS Low Power Mode): kick on first interaction.
-    const onGesture = () => videos.forEach(play);
+    // Last-resort fallback (e.g. iOS Low Power Mode): kick currently-loaded
+    // videos on the first user gesture.
+    const onGesture = () =>
+      videos.forEach((v) => {
+        if (v.querySelector("source[src]")) play(v);
+      });
     document.addEventListener("touchstart", onGesture, { once: true, passive: true });
     document.addEventListener("click", onGesture, { once: true });
     cleanups.push(() => {

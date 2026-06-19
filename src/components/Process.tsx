@@ -13,19 +13,22 @@ const STEPS = [
     number: "01",
     title: "We uncover your story",
     body: "We dig deep into your brand, surface what makes you irreplaceable, and shape it into sharp positioning and a website strategy that connects in seconds.",
-    video: "/step1.mp4",
+    video: "/step1",
+    poster: "/assets/posters/step1.webp",
   },
   {
     number: "02",
     title: "We shape your digital presence",
     body: "With your narrative locked, we design and direct a brand and website that feels premium, signals credibility, and gives your audience one clear reason to lean in and act.",
-    video: "/assets/Design_FINAL_compressed.mp4",
+    video: "/assets/Design_FINAL_compressed",
+    poster: "/assets/posters/Design_FINAL_compressed.webp",
   },
   {
     number: "03",
     title: "We send it into the world",
     body: "Your brand and website goes live as a long-term asset that turns attention into opportunity, attracts the clients you're built for, and grows with you.",
-    video: "/step3.mp4",
+    video: "/step3",
+    poster: "/assets/posters/step3.webp",
   },
 ];
 
@@ -140,18 +143,25 @@ export function Process() {
               </div>
             </div>
 
-            {/* Right: video */}
+            {/* Right: video — lazy-loaded via useAutoplayVideos. Sources carry
+                their URL in data-src (not src) + preload="none" so nothing is
+                fetched until the section nears the viewport; the poster shows
+                meanwhile (and is the only thing loaded on touch/save-data). */}
             <div className="relative overflow-hidden bg-[#060606]" style={{ minHeight: "clamp(180px, 25vw, 320px)" }}>
               <video
-                src={step.video}
-                autoPlay
+                poster={step.poster}
+                preload="none"
                 muted
                 loop
                 playsInline
                 disablePictureInPicture
                 aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"
-              />
+              >
+                <source data-src={`${step.video}.av1.mp4`} type='video/mp4; codecs="av01.0.05M.08"' />
+                <source data-src={`${step.video}.webm`} type="video/webm" />
+                <source data-src={`${step.video}.mp4`} type="video/mp4" />
+              </video>
             </div>
           </div>
         ))}
