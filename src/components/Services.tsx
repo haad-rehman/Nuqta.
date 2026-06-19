@@ -47,18 +47,16 @@ export function Services() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           {SERVICES.map((s, i) => (
             <div key={s.name}>
-              {/* Service name */}
+              {/* Service name — the <h2> keeps its heading semantics; the
+                  interactive control is a real nested <button> so screen
+                  readers and keyboard users get a proper button (native
+                  Enter/Space + focus) without overriding the heading role.
+                  Padding lives on the button so the click target is unchanged. */}
               <h2
                 ref={(el) => { rowRefs.current[i] = el; }}
-                role="button"
-                tabIndex={0}
-                aria-label={s.name}
                 onPointerEnter={() => handlePointerEnter(i)}
-                onClick={() => setActive(active === i ? -1 : i)}
-                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActive(active === i ? -1 : i); } }}
                 style={{
                   margin: 0,
-                  padding: "11.9px 0",
                   fontFamily: "Khteka, Arial, sans-serif",
                   fontSize: "clamp(1.6rem, 5vw, 76px)",
                   fontWeight: 500,
@@ -67,11 +65,29 @@ export function Services() {
                   color: "rgb(232, 232, 227)",
                   opacity: active === i ? 1 : 0.3,
                   transition: "opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-                  cursor: "pointer",
                   userSelect: "none",
                 }}
               >
-                {s.name}
+                <button
+                  type="button"
+                  onClick={() => setActive(active === i ? -1 : i)}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    margin: 0,
+                    padding: "11.9px 0",
+                    border: "none",
+                    background: "none",
+                    font: "inherit",
+                    color: "inherit",
+                    letterSpacing: "inherit",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {s.name}
+                </button>
               </h2>
 
               {/* ── Mobile inline accordion image ── */}
