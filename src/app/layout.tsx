@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { AppShell } from "@/components/AppShell";
@@ -45,6 +46,7 @@ export default function RootLayout({
         <AppShell>
           <SmoothScroll>{children}</SmoothScroll>
         </AppShell>
+        <Analytics />
       </body>
     </html>
   );
