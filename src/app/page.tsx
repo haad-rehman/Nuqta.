@@ -11,9 +11,42 @@ import { FAQs } from "@/components/FAQs";
 import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 
+const SITE = "https://nuqtaa.studio";
+
+// Organization schema on the highest-authority page (the root URL), cross-linked
+// to the Person schema on /about. Reinforces one distinct entity — Nuqta, Doha,
+// founded by Haad Rehman — to counter name-conflation in search/AI results.
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${SITE}#organization`,
+  name: "Nuqta",
+  alternateName: "Nuqta Studio",
+  url: SITE,
+  logo: `${SITE}/icon.png`,
+  description:
+    "Nuqta is a brand and web design studio in Doha, Qatar, working with founder-led B2B brands.",
+  foundingDate: "2024",
+  founder: {
+    "@type": "Person",
+    "@id": `${SITE}/about#haad-rehman`,
+    name: "Haad Rehman",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Doha",
+    addressCountry: "QA",
+  },
+  sameAs: ["https://www.instagram.com/studionuqtaa/"],
+};
+
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
       <Navigation />
       <main>
         <Hero />
