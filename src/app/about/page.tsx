@@ -274,6 +274,49 @@ export default function AboutPage() {
                 </dd>
               </dl>
 
+              {/* Elsewhere — visible profile links. rel="me" declares these as
+                 the same person's accounts (reinforces the entity ownership the
+                 sameAs schema also states). */}
+              <div style={{ marginTop: "4px" }}>
+                <p style={{ ...eyebrow, marginBottom: "14px" }}>Elsewhere</p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "12px 28px",
+                    fontFamily: '"Suisse Mono", monospace',
+                    fontSize: "12px",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  <a
+                    href={PROFILES.linkedin}
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    style={{ color: "#c8b89a", textDecoration: "none" }}
+                  >
+                    LinkedIn ↗
+                  </a>
+                  <a
+                    href={PROFILES.github}
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    style={{ color: "#c8b89a", textDecoration: "none" }}
+                  >
+                    GitHub ↗
+                  </a>
+                  <a
+                    href={PROFILES.instagram}
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                    style={{ color: "#c8b89a", textDecoration: "none" }}
+                  >
+                    Instagram ↗
+                  </a>
+                </div>
+              </div>
+
               {/* CTA */}
               <div style={{ marginTop: "24px" }}>
                 <a
