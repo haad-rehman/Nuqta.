@@ -544,17 +544,33 @@ export function Navigation() {
             <div style={{ marginTop: "40px", display: "flex", gap: "32px", fontSize: "10px", color: "#888880", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: '"Suisse Mono", monospace' }}>
               <span>EST 2024</span><span>Doha, Qatar</span>
             </div>
-            <div style={{ marginTop: "32px" }}>
-              <a
-                href={CAL_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div style={{ marginTop: "32px", display: "flex", flexWrap: "wrap", gap: "24px 32px", alignItems: "center" }}>
+              <Link
+                href="/about"
+                onClick={() => setAboutOpen(false)}
                 style={{
                   color: "#f5f0eb",
                   fontSize: "11px",
                   letterSpacing: "0.18em",
                   textTransform: "uppercase",
                   borderBottom: "1px solid rgba(245,240,235,0.3)",
+                  paddingBottom: "2px",
+                  textDecoration: "none",
+                  fontFamily: '"Khteka"',
+                }}
+              >
+                Read Haad&apos;s full profile →
+              </Link>
+              <a
+                href={CAL_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#888880",
+                  fontSize: "11px",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  borderBottom: "1px solid rgba(136,136,128,0.3)",
                   paddingBottom: "2px",
                   textDecoration: "none",
                   fontFamily: '"Khteka"',
