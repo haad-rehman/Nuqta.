@@ -249,7 +249,7 @@ export default function AboutPage() {
               </p>
               <p>
                 Nuqta is based in Doha and works with clients across the Gulf and
-                beyond. Its thinking has reached more than 60,000 creatives.
+                beyond. Its thinking has reached more than 1,000 creatives.
               </p>
 
               {/* Fast facts — plain, crawlable, Q&A shaped */}
