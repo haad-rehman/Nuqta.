@@ -15,6 +15,13 @@ const PROFILES = {
   instagram: "https://www.instagram.com/studionuqtaa/", // studio IG (already live)
 };
 
+// Schema-only profiles: included in the `sameAs` entity graph (crawlers + AI
+// read these) but intentionally NOT rendered in the visible "Elsewhere" row.
+// Same HTML is served to everyone — this is structured data, not cloaking.
+const SCHEMA_ONLY_PROFILES = {
+  fiverr: "https://www.fiverr.com/haadrehman_", // corroborating entity node only
+};
+
 const SITE = "https://nuqtaa.studio";
 const CAL_LINK = "https://cal.com/hadu-wfspde/intro-call-with-haad";
 
@@ -81,9 +88,12 @@ const personSchema = {
     "Art direction",
     "B2B branding",
   ],
-  sameAs: [PROFILES.linkedin, PROFILES.github, PROFILES.instagram].filter(
-    (u) => u && !u.includes("YOUR_")
-  ),
+  sameAs: [
+    PROFILES.linkedin,
+    PROFILES.github,
+    PROFILES.instagram,
+    SCHEMA_ONLY_PROFILES.fiverr,
+  ].filter((u) => u && !u.includes("YOUR_")),
 };
 
 // mono eyebrow style
