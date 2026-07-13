@@ -539,7 +539,7 @@ export function Navigation() {
             <div style={{ display: "flex", flexDirection: "column", gap: "20px", color: "#888880", fontSize: "14px", lineHeight: 1.7, fontFamily: '"Khteka"' }}>
               <p>Nuqta was founded after watching exceptional founders stay invisible because their presence never caught up to who they&apos;d become.</p>
               <p>We&apos;re a brand and web design studio built for established, founder-led B2B brands whose digital presence hasn&apos;t matched their real-world impact — yet.</p>
-              <p>Our thinking has reached over <span style={{ color: "#f5f0eb" }}>60,000 creatives</span>.</p>
+              <p>Our thinking has reached over <span style={{ color: "#f5f0eb" }}>1,000 creatives</span>.</p>
             </div>
             <div style={{ marginTop: "40px", display: "flex", gap: "32px", fontSize: "10px", color: "#888880", letterSpacing: "0.22em", textTransform: "uppercase", fontFamily: '"Suisse Mono", monospace' }}>
               <span>EST 2024</span><span>Doha, Qatar</span>
