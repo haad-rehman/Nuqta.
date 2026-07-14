@@ -58,7 +58,7 @@ export default function Home() {
         </div>
         {/* Breathing room between gap statement and works */}
         <div style={{ height: "clamp(80px, 10vw, 120px)", background: "#0a0a0a" }} />
-        {/* Works section from nirnor.jp replaces Success Stories */}
+        {/* Works section — noth.in-style grid (Flip letter travel, clip reveals, double parallax) */}
         <WorksSection />
         {/* Services section: dark two-column layout */}
         <section id="services" style={{ background: "rgb(8, 8, 7)" }}>

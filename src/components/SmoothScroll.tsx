@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -23,7 +26,15 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     const update = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(update);
 
+    // Lenis swallows native wheel events, so ScrollTrigger never hears about
+    // programmatic/virtual scrolls unless Lenis reports them itself. Without
+    // this, scrubbed triggers freeze at whatever scroll position existed when
+    // they were created (their cached scroll() value never updates).
+    const onLenisScroll = () => ScrollTrigger.update();
+    lenis.on("scroll", onLenisScroll);
+
     return () => {
+      lenis.off("scroll", onLenisScroll);
       gsap.ticker.remove(update);
       lenis.destroy();
     };
