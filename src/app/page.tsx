@@ -1,4 +1,4 @@
-import { Navigation } from "@/components/Navigation";
+import { NuqtaStaggeredMenu } from "@/components/NuqtaStaggeredMenu";
 import { Hero } from "@/components/Hero";
 import { ProblemsSection } from "@/components/ProblemsSection";
 import { ClientsMarquee } from "@/components/ClientsMarquee";
@@ -47,7 +47,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
       />
-      <Navigation />
+      <NuqtaStaggeredMenu />
       <main>
         <Hero />
         <ProblemsSection />

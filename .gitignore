@@ -6,3 +6,4 @@ node_modules/
 public/_originals/
 .playwright-mcp/
 tsconfig.tsbuildinfo
+dev.log

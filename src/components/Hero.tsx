@@ -6,14 +6,13 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/motion";
 
-// Absolute-positioned decorative canvas (inset-0, zIndex 0). It already
-// self-defers init via requestIdleCallback and is not the LCP element, so
-// loading it client-only keeps its code out of the critical bundle without
-// any layout shift (its box is fixed by the hero section, not by this node).
-const HeroBackground = dynamic(
-  () => import("@/components/HeroBackground").then((m) => m.HeroBackground),
-  { ssr: false }
-);
+// Absolute-positioned decorative canvas (inset-0, zIndex 0). Client-only:
+// LiquidEther runs a Three.js fluid sim with no SSR output; it is not the
+// LCP element, so keeping it out of the critical bundle costs nothing (its
+// box is fixed by the hero section, not by this node).
+const LiquidEther = dynamic(() => import("@/components/LiquidEther"), {
+  ssr: false,
+});
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -113,8 +112,21 @@ export function Hero() {
       ref={sectionRef}
       style={{ position: "relative", height: "100vh", overflow: "hidden" }}
     >
-      {/* Background canvas animation (ported from the old hero-bg.html iframe) */}
-      <HeroBackground />
+      {/* Background: fluid sim distorting the hero backdrop image */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+        <LiquidEther
+          imageSrc="/hero-bg.webp"
+          imageDistortion={0.3}
+          imageTint={0.35}
+          colors={["#141412", "#2b2b28", "#454540"]}
+          mouseForce={20}
+          cursorSize={100}
+          resolution={0.5}
+          autoDemo
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+        />
+      </div>
 
       {/* Top vignette — keeps nav area very dark */}
       <div

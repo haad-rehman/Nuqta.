@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Navigation } from "@/components/Navigation";
+import { NuqtaStaggeredMenu } from "@/components/NuqtaStaggeredMenu";
 import { Footer } from "@/components/Footer";
 
 /* ────────────────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ const eyebrow: React.CSSProperties = {
 export default function AboutPage() {
   return (
     <>
-      <Navigation />
+      <NuqtaStaggeredMenu />
       <script
         type="application/ld+json"
         // JSON-LD injected for search engines + AI crawlers
