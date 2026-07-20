@@ -161,6 +161,26 @@ export function Footer() {
                 <span>Instagram</span>
               </a>
               <p className="text-[#f5f0eb] text-[13px]">Based in Doha, Qatar</p>
+
+              {/* Awards */}
+              <p className="text-[#888880] text-[10px] tracking-[0.22em] uppercase mt-10 mb-4">(Recognition)</p>
+              <a
+                href="https://www.astonishingawards.com/nominee/nuqta"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Nuqta on Astonishing Awards"
+                className="group block w-fit"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/assets/awards/astonishing-awards-badge.svg"
+                  alt="Astonishing Awards nominee badge"
+                  width={100}
+                  height={55}
+                  loading="lazy"
+                  className="opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                />
+              </a>
             </div>
           </div>
 

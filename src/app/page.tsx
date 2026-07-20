@@ -37,7 +37,11 @@ const orgSchema = {
     addressLocality: "Doha",
     addressCountry: "QA",
   },
-  sameAs: ["https://www.instagram.com/studionuqtaa/"],
+  award: "Astonishing Awards nominee (2026)",
+  sameAs: [
+    "https://www.instagram.com/studionuqtaa/",
+    "https://www.astonishingawards.com/nominee/nuqta",
+  ],
 };
 
 export default function Home() {
