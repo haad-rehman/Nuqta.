@@ -40,6 +40,8 @@ const orgSchema = {
   award: "Astonishing Awards nominee (2026)",
   sameAs: [
     "https://www.instagram.com/studionuqtaa/",
+    "https://www.facebook.com/nuqtaa.studio/",
+    "https://www.tiktok.com/@nuqtaa.studio",
     "https://www.astonishingawards.com/nominee/nuqta",
   ],
 };
