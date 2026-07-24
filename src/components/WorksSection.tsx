@@ -139,6 +139,24 @@ export function WorksSection() {
 
   // Desktop = art-directed grid + all scroll effects; mobile = simple stack.
   const [isDesktop, setIsDesktop] = useState(true);
+
+  // Lightbox: index of the open tile, or null. Tiles open their image in an
+  // overlay for now — no case-study pages to link to yet.
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  useEffect(() => {
+    if (lightbox === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(null);
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightbox]);
+
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 992px)");
     const update = () => setIsDesktop(mq.matches);
@@ -540,18 +558,18 @@ export function WorksSection() {
           {TILES.map((tile, i) => {
             const slot = SLOTS[i % SLOTS.length];
             const row = Math.floor(i / SLOTS.length) * ROWS_PER_CYCLE + slot.rowOffset + 1;
-            const hasLink = tile.href !== "#";
             return (
               <a
                 key={i}
                 ref={(el) => {
                   tileRefs.current[i] = el;
                 }}
-                href={tile.href}
-                target={hasLink ? "_blank" : undefined}
-                rel={hasLink ? "noopener noreferrer" : undefined}
-                data-cursor-text="Explore"
-                aria-label={hasLink ? `${tile.title} — opens in new tab` : tile.title}
+                href={tile.src}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setLightbox(i);
+                }}
+                aria-label={`${tile.title} — view image`}
                 style={{
                   display: "block",
                   textDecoration: "none",
@@ -627,6 +645,57 @@ export function WorksSection() {
           })}
         </div>
       </div>
+
+      {/* Lightbox overlay — click anywhere or press Escape to close */}
+      {lightbox !== null && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${TILES[lightbox].title} — enlarged image`}
+          onClick={() => setLightbox(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 200,
+            background: "rgba(6, 6, 6, 0.92)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "clamp(16px, 4vw, 48px)",
+            cursor: "zoom-out",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={TILES[lightbox].src}
+            alt={TILES[lightbox].title}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+              borderRadius: "0.25rem",
+            }}
+          />
+          <button
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+            style={{
+              position: "absolute",
+              top: "clamp(12px, 2vw, 24px)",
+              right: "clamp(16px, 2.5vw, 32px)",
+              background: "none",
+              border: "none",
+              color: "#f5f0eb",
+              fontSize: "2rem",
+              lineHeight: 1,
+              cursor: "pointer",
+              padding: "8px",
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </section>
   );
 }
