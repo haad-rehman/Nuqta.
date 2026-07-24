@@ -37,11 +37,16 @@ const orgSchema = {
     addressLocality: "Doha",
     addressCountry: "QA",
   },
-  award: "Astonishing Awards nominee (2026)",
+  award: [
+    "Astonishing Awards — Project of the Day (2026)",
+    "Astonishing Awards — Nominee (2026)",
+  ],
   sameAs: [
     "https://www.instagram.com/studionuqtaa/",
     "https://www.facebook.com/nuqtaa.studio/",
     "https://www.tiktok.com/@nuqtaa.studio",
+    "https://www.linkedin.com/company/nuqta-studio",
+    "https://clutch.co/profile/nuqta",
     "https://www.astonishingawards.com/nominee/nuqta",
   ],
 };
