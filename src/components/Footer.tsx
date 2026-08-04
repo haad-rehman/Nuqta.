@@ -207,6 +207,16 @@ export function Footer() {
                   className="opacity-60 group-hover:opacity-100 transition-opacity duration-200"
                 />
               </a>
+              <a
+                href="https://www.designnominees.com/sites/nuqtaa"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Nuqta — Design Nominees Site of the Day"
+                className="group flex w-fit items-baseline gap-2 mt-4 text-[#f5f0eb] hover:text-[#c8b89a] transition-colors duration-200"
+              >
+                <span className="text-[13px] font-semibold tracking-wide">DN</span>
+                <span className="text-[13px]">Site of the Day</span>
+              </a>
             </div>
           </div>
 
