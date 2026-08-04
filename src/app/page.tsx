@@ -42,11 +42,13 @@ const orgSchema = {
     "Astonishing Awards — Nominee (2026)",
   ],
   sameAs: [
+    "https://www.wikidata.org/wiki/Q140851593",
     "https://www.instagram.com/studionuqtaa/",
     "https://www.facebook.com/nuqtaa.studio/",
     "https://www.tiktok.com/@nuqtaa.studio",
     "https://www.linkedin.com/company/nuqta-studio",
     "https://clutch.co/profile/nuqta",
+    "https://www.designnominees.com/sites/nuqtaa",
     "https://www.astonishingawards.com/nominee/nuqta",
   ],
 };
