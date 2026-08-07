@@ -16,40 +16,31 @@ interface Tile {
   href: string;
   title: string;
   caption: string;
+  fit?: "cover" | "contain";
 }
 
 // Order matches the art-direction SLOTS below:
-// 0 left tall · 1 right short · 2 center large · 3 left short · 4 right tall.
+// 0 left tall · 1 right short · 2 center large.
 const TILES: Tile[] = [
   {
-    src: "/assets/works/Continents-Legacy-1.webp",
-    href: "#",
-    title: "Continents Legacy",
-    caption: "Brand identity for a Qatari classic-car house.",
+    src: "/assets/works/AlAyoon.webp",
+    href: "https://alayoon.netlify.app/",
+    title: "Al Ayoon",
+    caption: "A refined digital home for a Qatari classic-car house.",
+    fit: "contain",
   },
   {
-    src: "/assets/works/Continents-Legacy-2.webp",
-    href: "#",
-    title: "Continents Legacy",
-    caption: "A digital home serving Al Wakrah since 1983.",
+    src: "/assets/works/RIVYMUN.webp",
+    href: "https://rivy-mun-web.vercel.app/",
+    title: "RIVYMUN",
+    caption: "A bold digital presence for debate and diplomacy.",
+    fit: "contain",
   },
   {
-    src: "/assets/works/Al-Sharqi.webp",
-    href: "https://alsharqityres.netlify.app/",
-    title: "Al Sharqi",
-    caption: "A legacy of precision, rebuilt for the web.",
-  },
-  {
-    src: "/assets/works/The-Usual.webp",
-    href: "#",
+    src: "/assets/works/TheUsual.png",
+    href: "https://the-usual-delta.vercel.app/",
     title: "The Usual",
-    caption: "Brand identity, down to the business card.",
-  },
-  {
-    src: "/assets/works/Desert-Drive.webp",
-    href: "https://desertdrive.netlify.app/",
-    title: "Desert Drive",
-    caption: "Branding and web for an off-road experience.",
+    caption: "A considered identity for a student-built haircare brand.",
   },
 ];
 
@@ -140,23 +131,6 @@ export function WorksSection() {
   // Desktop = art-directed grid + all scroll effects; mobile = simple stack.
   const [isDesktop, setIsDesktop] = useState(true);
 
-  // Lightbox: index of the open tile, or null. Tiles open their image in an
-  // overlay for now — no case-study pages to link to yet.
-  const [lightbox, setLightbox] = useState<number | null>(null);
-  useEffect(() => {
-    if (lightbox === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLightbox(null);
-    };
-    window.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [lightbox]);
-
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 992px)");
     const update = () => setIsDesktop(mq.matches);
@@ -209,7 +183,7 @@ export function WorksSection() {
             scrollTrigger: { trigger: tile, start: "top bottom", end: "bottom top", scrub: 1.5 },
           }
         );
-        if (imgWrap) {
+        if (imgWrap && TILES[i].fit !== "contain") {
           gsap.fromTo(
             imgWrap,
             { yPercent: -5 },
@@ -564,12 +538,8 @@ export function WorksSection() {
                 ref={(el) => {
                   tileRefs.current[i] = el;
                 }}
-                href={tile.src}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLightbox(i);
-                }}
-                aria-label={`${tile.title} — view image`}
+                href={tile.href}
+                aria-label={`${tile.title} — visit website`}
                 style={{
                   display: "block",
                   textDecoration: "none",
@@ -628,7 +598,12 @@ export function WorksSection() {
                     ref={(el) => {
                       imgWrapRefs.current[i] = el;
                     }}
-                    style={{ position: "absolute", inset: "0 0 -20% 0", willChange: "transform" }}
+                    style={{
+                      position: "absolute",
+                      inset: tile.fit === "contain" ? 0 : "0 0 -20% 0",
+                      backgroundColor: "#0a0a0a",
+                      willChange: "transform",
+                    }}
                   >
                     <Image
                       src={tile.src}
@@ -636,7 +611,7 @@ export function WorksSection() {
                       fill
                       sizes="(max-width: 991px) 92vw, 60vw"
                       unoptimized
-                      style={{ objectFit: "cover" }}
+                      style={{ objectFit: tile.fit ?? "cover" }}
                     />
                   </div>
                 </div>
@@ -646,56 +621,6 @@ export function WorksSection() {
         </div>
       </div>
 
-      {/* Lightbox overlay — click anywhere or press Escape to close */}
-      {lightbox !== null && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${TILES[lightbox].title} — enlarged image`}
-          onClick={() => setLightbox(null)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 200,
-            background: "rgba(6, 6, 6, 0.92)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "clamp(16px, 4vw, 48px)",
-            cursor: "zoom-out",
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={TILES[lightbox].src}
-            alt={TILES[lightbox].title}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "contain",
-              borderRadius: "0.25rem",
-            }}
-          />
-          <button
-            onClick={() => setLightbox(null)}
-            aria-label="Close"
-            style={{
-              position: "absolute",
-              top: "clamp(12px, 2vw, 24px)",
-              right: "clamp(16px, 2.5vw, 32px)",
-              background: "none",
-              border: "none",
-              color: "#f5f0eb",
-              fontSize: "2rem",
-              lineHeight: 1,
-              cursor: "pointer",
-              padding: "8px",
-            }}
-          >
-            ×
-          </button>
-        </div>
-      )}
     </section>
   );
 }
