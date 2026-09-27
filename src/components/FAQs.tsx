@@ -35,7 +35,7 @@ const FAQS = [
   },
   {
     q: "What is the project investment?",
-    a: "Project investment ranges from 500 to 1,500 QAR depending on scope and project complexity.\n\nThe bigger your challenges and goals, the more resources are required to build a solution that solves your problems. We focus on value, not just a list of deliverables, ensuring your site pays for itself by attracting better clients, bigger opportunities, and lasting results.",
+    a: "Starter website: QAR 2,500 for a custom one-page site with up to six sections.\n\nSmall business website: QAR 4,500 for up to five pages.\n\nBrand identity and website: from QAR 7,500 for a core identity and a custom site up to five pages. These introductory rates apply to the next three projects in each package. Standard starting rates are QAR 3,500, QAR 6,000, and QAR 10,000 respectively.\n\nA 45-minute website review with annotated priorities is QAR 500. Arabic and English sites, ecommerce, copywriting, photography, extra pages, and custom integrations are scoped separately.",
   },
 ];
 
