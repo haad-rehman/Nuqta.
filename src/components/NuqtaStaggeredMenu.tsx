@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { StaggeredMenu } from "@/components/StaggeredMenu";
 
 const CAL_LINK = "https://cal.com/hadu-wfspde/intro-call-with-haad";
@@ -31,6 +32,19 @@ const socialItems = [
  * pointer events internally.
  */
 export function NuqtaStaggeredMenu() {
+  const [onLightSection, setOnLightSection] = useState(false);
+
+  useEffect(() => {
+    const works = document.getElementById("work");
+    if (!works) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setOnLightSection(entry.isIntersecting),
+      { rootMargin: "0px 0px -90% 0px" }
+    );
+    observer.observe(works);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="nuqta-sm contents">
       <StaggeredMenu
@@ -43,7 +57,7 @@ export function NuqtaStaggeredMenu() {
         logoUrl="/icon-192.png"
         colors={["#2b2b28", "#454540"]}
         accentColor="#8a8a80"
-        menuButtonColor="#e8e8e3"
+        menuButtonColor={onLightSection ? "#080807" : "#e8e8e3"}
         openMenuButtonColor="#e8e8e3"
         changeMenuColorOnOpen
       />

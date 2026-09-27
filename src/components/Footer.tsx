@@ -29,9 +29,9 @@ const CAL_LINK = "https://cal.com/hadu-wfspde/intro-call-with-haad";
 
 const NAV_LINKS = [
   { label: "About", href: "/about", soon: false },
-  { label: "Work", href: "#work", soon: false },
-  { label: "Process", href: "#process", soon: false },
-  { label: "Services", href: "#services", soon: false },
+  { label: "Work", href: "/#work", soon: false },
+  { label: "Process", href: "/#process", soon: false },
+  { label: "Services", href: "/#services", soon: false },
   { label: "Contact", href: CAL_LINK, soon: false },
 ];
 
